@@ -2,7 +2,7 @@ const steps = [
   {
     n: 1,
     headline: "Sign up below",
-    body: 'We\'ll add you to our WhatsApp group, "Sausage Cloud Ramen Egg Beta."',
+    body: 'We\'ll add you to our WhatsApp group, "Asianova Collective Ramen Egg Beta."',
   },
   {
     n: 2,

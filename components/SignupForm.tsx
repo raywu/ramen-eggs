@@ -20,9 +20,10 @@ export default function SignupForm() {
             className="airtable-embed airtable-dynamic-height"
             src="https://airtable.com/embed/app0reAWbVwTy2hZQ/pagUFxDCJ9cuGJtGz/form"
             width="100%"
-            height={533}
+            height={900}
+            scrolling="no"
             style={{ border: "none" }}
-            title="Join the Sausage Cloud beta"
+            title="Join the Asianova Collective beta"
           />
         </div>
         <p className="text-sm opacity-60">

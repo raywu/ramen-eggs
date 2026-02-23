@@ -1,8 +1,8 @@
-# Spec: Sausage Cloud, Inc. Landing Page
+# Spec: Asianova Collective, Inc. Landing Page
 
 ## Context
 
-Build a landing page for Sausage Cloud, Inc., a fresh ramen egg weekly delivery service running a beta in Oakland and Berkeley, CA. The page must communicate the product clearly, drive sign-ups via an embedded Airtable form, and explain how the beta program works.
+Build a landing page for Asianova Collective, Inc., a fresh ramen egg weekly delivery service running a beta in Oakland and Berkeley, CA. The page must communicate the product clearly, drive sign-ups via an embedded Airtable form, and explain how the beta program works.
 
 ---
 
@@ -31,7 +31,7 @@ Build a landing page for Sausage Cloud, Inc., a fresh ramen egg weekly delivery 
 ## Page Structure
 
 ### 1. Nav
-- Logo/wordmark: "Sausage Cloud" (left-aligned, small)
+- Logo/wordmark: "Asianova Collective" (left-aligned, small)
 - Single CTA button (right): "Join the Beta" → `#signup` anchor
 
 ---
@@ -83,7 +83,7 @@ Short feature list:
 
 **Steps:**
 
-1. **Sign up below** — we'll add you to our WhatsApp group, "Sausage Cloud Ramen Egg Beta."
+1. **Sign up below** — we'll add you to our WhatsApp group, "Asianova Collective Ramen Egg Beta."
 2. **Get the weekly ping** — every week you'll receive a message with that week's pricing and an order reminder.
 3. **Confirm your order** — fill out the order form to lock in your quantity. Pricing is visible before you confirm.
 4. **Pick up your eggs** — collect your order throughout the week, or catch us at the **South Berkeley Farmers' Market** (Tuesdays on Adeline).
@@ -111,7 +111,7 @@ https://airtable.com/app0reAWbVwTy2hZQ/pagUFxDCJ9cuGJtGz/form
 
 ### 7. Footer
 ```
-© 2026 Sausage Cloud, Inc. All rights reserved.
+© 2026 Asianova Collective, Inc. All rights reserved.
 ```
 - Minimal, centered or left-aligned
 - No extra links needed unless added later

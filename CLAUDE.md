@@ -1,4 +1,4 @@
-# Sausage Cloud, Inc. — Project Context
+# Asianova Collective, Inc. — Project Context
 
 ## Business
 Weekly ramen egg delivery service, currently in beta in Oakland & Berkeley, CA.

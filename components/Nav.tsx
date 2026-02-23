@@ -8,7 +8,7 @@ export default function Nav() {
       }}
     >
       <span className="font-serif text-base font-semibold tracking-tight">
-        Sausage Cloud
+        Asianova Collective
       </span>
       <a
         href="#signup"
