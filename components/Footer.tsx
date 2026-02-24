@@ -5,7 +5,7 @@ export default function Footer() {
       style={{ borderColor: "var(--color-border)" }}
     >
       <p className="text-xs opacity-40">
-        &copy; 2026 Asianova Collective. All rights reserved.
+        &copy; 2026 Asianova Collective, LLC. All rights reserved.
       </p>
     </footer>
   );
