@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useId, cloneElement, type FormEvent, type ReactElement } from "react";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
@@ -219,20 +219,23 @@ function FormField({
   label: string;
   required?: boolean;
   hint?: string;
-  children: React.ReactNode;
+  children: ReactElement<{ id?: string }>;
 }) {
+  const generatedId = useId();
+  const inputId = children.props.id || generatedId;
+
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium">
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={inputId} className="text-sm font-medium">
         {label}
         {required && (
           <span className="ml-0.5" style={{ color: "var(--color-accent)" }}>
             *
           </span>
         )}
-      </span>
+      </label>
       {hint && <span className="text-xs opacity-50">{hint}</span>}
-      {children}
-    </label>
+      {cloneElement(children, { id: inputId })}
+    </div>
   );
 }

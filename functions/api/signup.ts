@@ -26,23 +26,47 @@ const REQUIRED_FIELDS: (keyof SignupBody)[] = [
 
 const VALID_EGG_OPTIONS = ["0-1", "2-5", "6-10", "10+"];
 
+const ALLOWED_ORIGINS = [
+  "https://theasianova.com",
+  "https://www.theasianova.com",
+  "http://localhost",
+];
+
+function isOriginAllowed(origin: string | null): boolean {
+  if (!origin) return false;
+  return ALLOWED_ORIGINS.some(
+    (allowed) => origin === allowed || origin.startsWith(allowed + ":")
+  );
+}
+
 function corsHeaders(origin: string | null) {
   return {
-    "Access-Control-Allow-Origin": origin || "*",
+    "Access-Control-Allow-Origin": origin && isOriginAllowed(origin) ? origin : ALLOWED_ORIGINS[0],
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
 }
 
 export const onRequestOptions: PagesFunction<Env> = async ({ request }) => {
+  const origin = request.headers.get("Origin");
+  if (!isOriginAllowed(origin)) {
+    return new Response(null, { status: 403 });
+  }
   return new Response(null, {
     status: 204,
-    headers: corsHeaders(request.headers.get("Origin")),
+    headers: corsHeaders(origin),
   });
 };
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const origin = request.headers.get("Origin");
+  if (!isOriginAllowed(origin)) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const headers = {
     "Content-Type": "application/json",
     ...corsHeaders(origin),
@@ -62,6 +86,28 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (missing.length > 0) {
     return new Response(
       JSON.stringify({ error: `Missing required fields: ${missing.join(", ")}` }),
+      { status: 400, headers }
+    );
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim())) {
+    return new Response(
+      JSON.stringify({ error: "Invalid email address" }),
+      { status: 400, headers }
+    );
+  }
+
+  if (!/^\d{5}$/.test(body.zip.trim())) {
+    return new Response(
+      JSON.stringify({ error: "Invalid zip code" }),
+      { status: 400, headers }
+    );
+  }
+
+  const phoneDigits = body.phone.trim().replace(/\D/g, "");
+  if (phoneDigits.length < 10) {
+    return new Response(
+      JSON.stringify({ error: "Invalid phone number" }),
       { status: 400, headers }
     );
   }

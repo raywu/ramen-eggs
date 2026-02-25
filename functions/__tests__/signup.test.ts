@@ -150,4 +150,101 @@ describe("OPTIONS /api/signup", () => {
       "POST, OPTIONS"
     );
   });
+
+  it("returns 403 for disallowed origin", async () => {
+    const request = new Request("https://theasianova.com/api/signup", {
+      method: "OPTIONS",
+      headers: { Origin: "https://evil.com" },
+    });
+
+    const res = await onRequestOptions({ request, env });
+    expect(res.status).toBe(403);
+  });
+});
+
+describe("CORS origin allowlist", () => {
+  it("returns 403 for disallowed origin on POST", async () => {
+    const request = new Request("https://theasianova.com/api/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: "https://evil.com",
+      },
+      body: JSON.stringify(validBody),
+    });
+
+    const res = await onRequestPost({ request, env });
+    expect(res.status).toBe(403);
+  });
+
+  it("allows localhost with port", async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ id: "rec123" }),
+    });
+
+    const request = new Request("http://localhost:3000/api/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: "http://localhost:8788",
+      },
+      body: JSON.stringify(validBody),
+    });
+
+    const res = await onRequestPost({ request, env });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBe(
+      "http://localhost:8788"
+    );
+  });
+});
+
+describe("Backend validation", () => {
+  it("returns 400 for invalid email", async () => {
+    const request = makeRequest("POST", {
+      ...validBody,
+      email: "not-an-email",
+    });
+    const res = await onRequestPost({ request, env });
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toBe("Invalid email address");
+  });
+
+  it("returns 400 for invalid zip code", async () => {
+    const request = makeRequest("POST", {
+      ...validBody,
+      zip: "9461",
+    });
+    const res = await onRequestPost({ request, env });
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toBe("Invalid zip code");
+  });
+
+  it("returns 400 for short phone number", async () => {
+    const request = makeRequest("POST", {
+      ...validBody,
+      phone: "12345",
+    });
+    const res = await onRequestPost({ request, env });
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toBe("Invalid phone number");
+  });
+
+  it("accepts phone with formatting characters", async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ id: "rec123" }),
+    });
+
+    const request = makeRequest("POST", {
+      ...validBody,
+      phone: "+1 (510) 555-1234",
+    });
+    const res = await onRequestPost({ request, env });
+    expect(res.status).toBe(200);
+  });
 });

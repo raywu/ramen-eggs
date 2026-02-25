@@ -6,17 +6,44 @@ const wordmarkFont = Space_Grotesk({
   weight: "700",
   subsets: ["latin"],
   variable: "--font-wordmark",
+  display: "swap",
 });
 
 const bodyFont = DM_Sans({
   subsets: ["latin"],
   variable: "--font-body",
+  display: "swap",
 });
 
+const siteTitle = "Asianova Collective — Fresh Ramen Eggs, Made to Order";
+const siteDescription =
+  "Gluten-free ramen eggs marinated in-house and delivered weekly in Oakland & Berkeley, CA. Join the beta.";
+const siteUrl = "https://theasianova.com";
+
 export const metadata: Metadata = {
-  title: "Asianova Collective — Fresh Ramen Eggs, Made to Order",
-  description:
-    "Gluten-free ramen eggs marinated in-house and delivered weekly in Oakland & Berkeley, CA. Join the beta.",
+  metadataBase: new URL(siteUrl),
+  title: siteTitle,
+  description: siteDescription,
+  openGraph: {
+    title: siteTitle,
+    description: siteDescription,
+    url: siteUrl,
+    siteName: "Asianova Collective",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: siteTitle,
+    description: siteDescription,
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

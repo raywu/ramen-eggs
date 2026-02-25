@@ -1,4 +1,4 @@
-# Asianova Collective, Inc. — Project Context
+# Asianova Collective, LLC — Project Context
 
 ## Business
 Weekly ramen egg delivery service, currently in beta in Oakland & Berkeley, CA.
