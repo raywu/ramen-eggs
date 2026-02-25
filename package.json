@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "preview": "next build && npx wrangler pages dev out",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",

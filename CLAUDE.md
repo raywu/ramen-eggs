@@ -27,8 +27,7 @@ Sign-ups via native form, proxied to Airtable through Cloudflare Pages Functions
 ## Development
 ```sh
 npm run dev                # Next.js dev server (frontend only)
-npm run build              # Build static site to out/
-npx wrangler pages dev out --binding AIRTABLE_PAT=<token>  # Full local dev
+npm run preview            # Build + serve with Pages Functions (reads .dev.vars)
 npm test                   # Run tests
 ```
 
