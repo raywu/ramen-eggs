@@ -54,7 +54,7 @@ npm run test:watch
 
 ## Deployment
 
-Hosted on Cloudflare Pages, auto-deploys on push to `main`.
+Hosted on Cloudflare Pages. Deploys automatically on push to `main` via GitHub integration — no manual deploy command or `CLOUDFLARE_API_TOKEN` needed.
 
 - Build command: `npm run build`
 - Output directory: `out`

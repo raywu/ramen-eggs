@@ -43,5 +43,9 @@ npm run preview            # Build + serve with Pages Functions (reads .dev.vars
 npm test                   # Run tests
 ```
 
+## Deployment
+Deploys automatically to Cloudflare Pages on push to `main` via GitHub integration.
+No manual deploy or `CLOUDFLARE_API_TOKEN` needed.
+
 ## Spec
 Full spec in `doc/spec.md`.
