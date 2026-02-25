@@ -24,6 +24,18 @@ Sign-ups via native form, proxied to Airtable through Cloudflare Pages Functions
 ## Environment Variables
 - `AIRTABLE_PAT` — set in Cloudflare Pages dashboard; `.env*` files are gitignored
 
+## Security
+- CORS restricted to `theasianova.com`, `www.theasianova.com`, `http://localhost` (with port)
+- Backend validation: email format, 5-digit zip, phone >= 10 digits
+
+## SEO
+- `public/robots.txt` and `public/sitemap.xml` present
+- OpenGraph + Twitter card meta in `app/layout.tsx`
+- Font `display: "swap"` on both fonts
+
+## Accessibility
+- `FormField` component uses `useId()` + `htmlFor` + `cloneElement` for label-input association
+
 ## Development
 ```sh
 npm run dev                # Next.js dev server (frontend only)
