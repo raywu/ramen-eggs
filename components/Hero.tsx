@@ -30,7 +30,7 @@ export default function Hero() {
         </div>
         <div className="relative w-full aspect-square rounded-sm overflow-hidden" style={{ border: "1px solid var(--color-border)" }}>
           <Image
-            src="/hero-egg.svg"
+            src="/egg-in-the-wild.jpg"
             alt="Ramen egg cross-section showing golden gooey yolk"
             fill
             className="object-cover"
