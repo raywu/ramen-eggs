@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg: #FFFDF7;
-  --color-text: #1A1A1A;
-  --color-accent: #C4903C;
-  --color-border: #E8E4DC;
+  --color-bg: #111111;
+  --color-text: #EDEDED;
+  --color-accent: #FF5C38;
+  --color-border: #2A2A2A;
 }
 
 html {
@@ -12,6 +12,7 @@ html {
 }
 
 body {
+  font-family: var(--font-body), sans-serif;
   background-color: var(--color-bg);
   color: var(--color-text);
 }

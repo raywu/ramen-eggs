@@ -6,19 +6,19 @@ export default function Hero() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="flex flex-col gap-6">
           <h1
-            className="font-serif text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight"
-            style={{ color: "var(--color-text)" }}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+            style={{ fontFamily: "var(--font-wordmark)", color: "var(--color-text)" }}
           >
             Fresh ramen eggs, made to order.
           </h1>
           <p className="text-lg leading-relaxed opacity-75">
-            Gluten-free, marinated in-house, and delivered weekly. Now in beta
+            Gluten-free, marinated in-house, made to order weekly. Now in beta
             in Oakland &amp; Berkeley.
           </p>
           <div>
             <a
               href="#signup"
-              className="inline-block text-base font-medium px-6 py-3 rounded-sm transition-opacity hover:opacity-80"
+              className="inline-block text-base font-medium px-6 py-3 rounded-md transition-all hover:brightness-110 hover:shadow-[0_0_16px_rgba(255,92,56,0.4)]"
               style={{
                 backgroundColor: "var(--color-accent)",
                 color: "var(--color-bg)",
@@ -28,7 +28,7 @@ export default function Hero() {
             </a>
           </div>
         </div>
-        <div className="relative w-full aspect-square rounded-sm overflow-hidden" style={{ border: "1px solid var(--color-border)" }}>
+        <div className="relative w-full aspect-square rounded-md overflow-hidden">
           <Image
             src="/egg-in-the-wild.jpg"
             alt="Ramen egg cross-section showing golden gooey yolk"

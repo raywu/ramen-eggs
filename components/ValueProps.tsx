@@ -45,7 +45,7 @@ export default function ValueProps() {
         {props.map((p) => (
           <div key={p.headline} className="flex flex-col gap-3">
             <div style={{ color: "var(--color-accent)" }}>{p.icon}</div>
-            <h3 className="font-serif text-lg font-semibold">{p.headline}</h3>
+            <h3 className="text-lg font-bold">{p.headline}</h3>
             <p className="text-sm leading-relaxed opacity-70">{p.body}</p>
           </div>
         ))}

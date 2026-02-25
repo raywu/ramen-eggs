@@ -9,7 +9,10 @@ export default function TheEgg() {
   return (
     <section className="py-20 px-6 md:px-12 lg:px-24">
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
-        <h2 className="font-serif text-3xl md:text-4xl font-semibold leading-tight">
+        <h2
+          className="text-3xl md:text-4xl font-bold leading-tight"
+          style={{ fontFamily: "var(--font-wordmark)" }}
+        >
           Golden. Gooey. Good for you.
         </h2>
         <p className="text-base leading-relaxed opacity-75">

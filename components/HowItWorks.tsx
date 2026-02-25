@@ -28,7 +28,10 @@ export default function HowItWorks() {
       style={{ borderColor: "var(--color-border)" }}
     >
       <div className="max-w-2xl mx-auto flex flex-col gap-10">
-        <h2 className="font-serif text-3xl md:text-4xl font-semibold leading-tight">
+        <h2
+          className="text-3xl md:text-4xl font-bold leading-tight"
+          style={{ fontFamily: "var(--font-wordmark)" }}
+        >
           How it works
         </h2>
         <ol className="flex flex-col gap-8">
