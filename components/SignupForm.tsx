@@ -80,6 +80,10 @@ export default function SignupForm() {
             <p className="opacity-70">
               We&apos;ll add you to our WhatsApp group shortly. Keep an eye on your phone.
             </p>
+            <p className="opacity-70">
+              Know someone who&apos;d love fresh ramen eggs? Share the link:
+            </p>
+            <CopyUrlButton />
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-5">
@@ -207,6 +211,39 @@ export default function SignupForm() {
         )}
       </div>
     </section>
+  );
+}
+
+function CopyUrlButton() {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText("https://theasianova.com");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+      style={{
+        backgroundColor: "var(--color-bg)",
+        border: "1px solid var(--color-border)",
+      }}
+    >
+      <span className="opacity-70">theasianova.com</span>
+      <span
+        className="px-2 py-0.5 rounded text-xs font-semibold"
+        style={{
+          backgroundColor: copied ? "transparent" : "var(--color-accent)",
+          color: copied ? "var(--color-accent)" : "var(--color-bg)",
+        }}
+      >
+        {copied ? "Copied!" : "Copy"}
+      </span>
+    </button>
   );
 }
 
