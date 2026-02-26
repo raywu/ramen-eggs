@@ -29,7 +29,7 @@ export default function HowItWorks() {
     >
       <div className="max-w-2xl mx-auto flex flex-col gap-10">
         <h2
-          className="text-3xl md:text-4xl font-bold leading-tight"
+          className="text-2xl md:text-3xl font-bold leading-tight"
           style={{ fontFamily: "var(--font-wordmark)" }}
         >
           How it works

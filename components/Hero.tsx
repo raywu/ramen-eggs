@@ -6,7 +6,7 @@ export default function Hero() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="flex flex-col gap-6">
           <h1
-            className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight"
             style={{ fontFamily: "var(--font-wordmark)", color: "var(--color-text)" }}
           >
             Fresh ramen eggs, made to order.
