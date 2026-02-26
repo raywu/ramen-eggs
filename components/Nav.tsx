@@ -9,7 +9,7 @@ export default function Nav() {
       }}
     >
       <div className="flex items-baseline gap-2">
-        <span className="text-lg tracking-tight" style={{ fontFamily: "var(--font-wordmark)" }}>
+        <span className="text-xl tracking-tight" style={{ fontFamily: "var(--font-wordmark)" }}>
           The Asianova
         </span>
         <span className="hidden md:inline text-sm opacity-50">

@@ -57,7 +57,7 @@ export default function SignupForm() {
     >
       <div className="max-w-2xl mx-auto flex flex-col gap-4">
         <h2
-          className="text-3xl md:text-4xl font-bold leading-tight"
+          className="text-2xl md:text-3xl font-bold leading-tight"
           style={{ fontFamily: "var(--font-wordmark)" }}
         >
           Join the beta

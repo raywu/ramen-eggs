@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, DM_Sans } from "next/font/google";
+import { Permanent_Marker, DM_Sans } from "next/font/google";
 import "./globals.css";
 
-const wordmarkFont = Space_Grotesk({
-  weight: "700",
+const wordmarkFont = Permanent_Marker({
+  weight: "400",
   subsets: ["latin"],
   variable: "--font-wordmark",
   display: "swap",
