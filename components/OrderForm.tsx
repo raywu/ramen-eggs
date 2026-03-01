@@ -1,15 +1,23 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import FormField from "./FormField";
+import { isOrderWindowOpen, getNextOrderWindow } from "@/lib/orderWindow";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
-const EGG_OPTIONS = ["0-1", "2-5", "6-10", "10+"];
-
-export default function SignupForm() {
+export default function OrderForm() {
+  const [open, setOpen] = useState(() => isOrderWindowOpen(new Date()));
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Re-check the gate every 30 seconds so the form appears/disappears live
+  useEffect(() => {
+    const id = setInterval(() => {
+      setOpen(isOrderWindowOpen(new Date()));
+    }, 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,13 +32,11 @@ export default function SignupForm() {
       email: data.get("email") as string,
       phone: data.get("phone") as string,
       zip: data.get("zip") as string,
-      eggsCurrently: data.get("eggsCurrently") as string,
-      eggsDesired: data.get("eggsDesired") as string,
-      whyNot: data.get("whyNot") as string,
+      // TODO: add order-specific fields once Google Form entry IDs are provided
     };
 
     try {
-      const res = await fetch("/api/signup", {
+      const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -50,9 +56,12 @@ export default function SignupForm() {
     }
   }
 
+  if (!open) {
+    return <ClosedMessage />;
+  }
+
   return (
     <section
-      id="signup"
       className="py-20 px-6 md:px-12 lg:px-24 border-t"
       style={{ borderColor: "var(--color-border)" }}
     >
@@ -61,30 +70,35 @@ export default function SignupForm() {
           className="text-2xl md:text-3xl font-bold leading-tight"
           style={{ fontFamily: "var(--font-wordmark)" }}
         >
-          Join the beta
+          Place an Order
         </h2>
         <p className="text-base opacity-70">
-          Serving Oakland and Berkeley, CA.
+          Fresh ramen eggs, made to order. Delivered weekly in Oakland &amp; Berkeley.
         </p>
 
         {status === "success" ? (
-          <div className="mt-6 p-8 rounded-md text-center flex flex-col items-center gap-4" style={{ backgroundColor: "var(--color-border)" }}>
+          <div
+            className="mt-6 p-8 rounded-md text-center flex flex-col items-center gap-4"
+            style={{ backgroundColor: "var(--color-border)" }}
+          >
             <div
               className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
-              style={{ backgroundColor: "var(--color-accent)", color: "var(--color-bg)" }}
+              style={{
+                backgroundColor: "var(--color-accent)",
+                color: "var(--color-bg)",
+              }}
             >
               ✓
             </div>
-            <h3 className="text-xl font-bold" style={{ fontFamily: "var(--font-wordmark)" }}>
-              You&apos;re in!
+            <h3
+              className="text-xl font-bold"
+              style={{ fontFamily: "var(--font-wordmark)" }}
+            >
+              Order received!
             </h3>
             <p className="opacity-70">
-              We&apos;ll add you to our WhatsApp group shortly. Keep an eye on your phone.
+              We&apos;ll confirm your order in the WhatsApp group shortly.
             </p>
-            <p className="opacity-70">
-              Know someone who&apos;d love fresh ramen eggs? Share the link:
-            </p>
-            <CopyUrlButton />
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-5">
@@ -108,7 +122,7 @@ export default function SignupForm() {
               />
             </FormField>
 
-            <FormField label="Phone (for WhatsApp)" required>
+            <FormField label="Phone" required>
               <input
                 type="tel"
                 name="phone"
@@ -118,11 +132,7 @@ export default function SignupForm() {
               />
             </FormField>
 
-            <FormField
-              label="Zip code"
-              required
-              hint="So that we can organize the beta group into batches"
-            >
+            <FormField label="Zip Code" required>
               <input
                 type="text"
                 name="zip"
@@ -134,47 +144,7 @@ export default function SignupForm() {
               />
             </FormField>
 
-            <FormField
-              label="How many ramen eggs do you eat every week?"
-              required
-              hint="On average, how many a week do you have them?"
-            >
-              <select name="eggsCurrently" required className="form-input" defaultValue="">
-                <option value="" disabled>
-                  Select...
-                </option>
-                {EGG_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </FormField>
-
-            <FormField
-              label="How many ramen eggs would you like to eat every week?"
-              required
-            >
-              <select name="eggsDesired" required className="form-input" defaultValue="">
-                <option value="" disabled>
-                  Select...
-                </option>
-                {EGG_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </FormField>
-
-            <FormField label="If you don't have as many ramen eggs as you'd like to, why not?">
-              <textarea
-                name="whyNot"
-                rows={3}
-                className="form-input resize-none"
-                placeholder="Optional"
-              />
-            </FormField>
+            {/* TODO: Add order-specific fields once Google Form entry IDs are provided */}
 
             {status === "error" && (
               <div
@@ -215,36 +185,53 @@ export default function SignupForm() {
   );
 }
 
-function CopyUrlButton() {
-  const [copied, setCopied] = useState(false);
+function ClosedMessage() {
+  const next = getNextOrderWindow(new Date());
 
-  function handleCopy() {
-    navigator.clipboard.writeText("https://theasianova.com");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
+  const day = next.toLocaleDateString("en-US", {
+    weekday: "long",
+    timeZone: "America/Los_Angeles",
+  });
+
+  const time = next.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "America/Los_Angeles",
+  });
 
   return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors"
-      style={{
-        backgroundColor: "var(--color-bg)",
-        border: "1px solid var(--color-border)",
-      }}
+    <section
+      className="py-20 px-6 md:px-12 lg:px-24 border-t"
+      style={{ borderColor: "var(--color-border)" }}
     >
-      <span className="opacity-70">theasianova.com</span>
-      <span
-        className="px-2 py-0.5 rounded text-xs font-semibold"
-        style={{
-          backgroundColor: copied ? "transparent" : "var(--color-accent)",
-          color: copied ? "var(--color-accent)" : "var(--color-bg)",
-        }}
-      >
-        {copied ? "Copied!" : "Copy"}
-      </span>
-    </button>
+      <div className="max-w-2xl mx-auto flex flex-col items-center gap-6 text-center">
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
+          style={{
+            backgroundColor: "var(--color-border)",
+          }}
+        >
+          🥚
+        </div>
+        <h2
+          className="text-2xl md:text-3xl font-bold leading-tight"
+          style={{ fontFamily: "var(--font-wordmark)" }}
+        >
+          Orders are currently closed
+        </h2>
+        <p className="text-base opacity-70">
+          Our order window opens every{" "}
+          <span className="font-semibold" style={{ color: "var(--color-accent)" }}>
+            {day}
+          </span>{" "}
+          at{" "}
+          <span className="font-semibold" style={{ color: "var(--color-accent)" }}>
+            {time} PT
+          </span>
+          .
+        </p>
+        <p className="text-sm opacity-50">Check back then to place your order!</p>
+      </div>
+    </section>
   );
 }
-
