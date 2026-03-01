@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const AIRTABLE_URL =
-  "https://api.airtable.com/v0/app0reAWbVwTy2hZQ/tbl2J2MAEBNL0KFnM";
+const GOOGLE_FORMS_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSc7c6kP2Bi0HXMM8-vtrsg-rMK5NeVaiNlM1i3UfEdakYkUvA/formResponse";
 
 const validBody = {
   name: "Test User",
@@ -13,7 +13,7 @@ const validBody = {
   whyNot: "Too expensive",
 };
 
-const env = { AIRTABLE_PAT: "test-pat-token" };
+const env = {};
 
 // Import the handler functions dynamically so we can mock fetch
 let onRequestPost: (ctx: { request: Request; env: typeof env }) => Promise<Response>;
@@ -73,11 +73,8 @@ describe("POST /api/signup", () => {
     expect(data.error).toContain("Invalid value for eggsCurrently");
   });
 
-  it("returns 200 and calls Airtable on valid input", async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ id: "rec123" }),
-    });
+  it("returns 200 and posts to Google Forms on valid input", async () => {
+    global.fetch = vi.fn().mockResolvedValue({ ok: true });
 
     const request = makeRequest("POST", validBody);
     const res = await onRequestPost({ request, env });
@@ -86,32 +83,21 @@ describe("POST /api/signup", () => {
     const data = await res.json();
     expect(data.success).toBe(true);
 
-    expect(global.fetch).toHaveBeenCalledWith(AIRTABLE_URL, {
+    expect(global.fetch).toHaveBeenCalledWith(GOOGLE_FORMS_URL, {
       method: "POST",
       headers: {
-        Authorization: "Bearer test-pat-token",
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: JSON.stringify({
-        fields: {
-          "Your Name": "Test User",
-          Email: "test@example.com",
-          "Phone (for WhatsApp)": "5105551234",
-          "Zip code": "94612",
-          "How many ramen eggs do you eat every week?": "2-5",
-          "How many ramen eggs would you like to eat every week?": "6-10",
-          "If you don't have as many ramen eggs as you'd like to, why not?":
-            "Too expensive",
-        },
-      }),
+      body: expect.any(String),
     });
+
+    const callArgs = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    const body = callArgs[1].body as string;
+    expect(body).toContain("entry.");
   });
 
-  it("returns 500 when Airtable API fails", async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: false,
-      text: () => Promise.resolve("Airtable error"),
-    });
+  it("returns 500 when Google Forms request fails", async () => {
+    global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 500 });
 
     const request = makeRequest("POST", validBody);
     const res = await onRequestPost({ request, env });
@@ -122,10 +108,7 @@ describe("POST /api/signup", () => {
   });
 
   it("sets CORS headers on response", async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ id: "rec123" }),
-    });
+    global.fetch = vi.fn().mockResolvedValue({ ok: true });
 
     const request = makeRequest("POST", validBody);
     const res = await onRequestPost({ request, env });
@@ -178,10 +161,7 @@ describe("CORS origin allowlist", () => {
   });
 
   it("allows localhost with port", async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ id: "rec123" }),
-    });
+    global.fetch = vi.fn().mockResolvedValue({ ok: true });
 
     const request = new Request("http://localhost:3000/api/signup", {
       method: "POST",
@@ -235,10 +215,7 @@ describe("Backend validation", () => {
   });
 
   it("accepts phone with formatting characters", async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ id: "rec123" }),
-    });
+    global.fetch = vi.fn().mockResolvedValue({ ok: true });
 
     const request = makeRequest("POST", {
       ...validBody,
