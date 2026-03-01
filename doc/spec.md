@@ -146,7 +146,6 @@ ramen-eggs/
 
 - All sections in single `page.tsx`, assembled from components
 - "Join the Beta" CTA in Nav and Hero both use `href="#signup"` smooth scroll
-- Airtable iframe: test at mobile widths; may need `min-height` and `overflow` handling
 - No analytics, no cookies banner
 - `next/image` for hero photo
 - Responsive: mobile-first, single-column stack on small screens
