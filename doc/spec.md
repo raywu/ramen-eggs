@@ -1,8 +1,8 @@
-# Spec: Asianova Collective, Inc. Landing Page
+# Spec: Asianova Collective, LLC Landing Page
 
 ## Context
 
-Build a landing page for Asianova Collective, Inc., a fresh ramen egg weekly delivery service running a beta in Oakland and Berkeley, CA. The page must communicate the product clearly, drive sign-ups via an embedded Airtable form, and explain how the beta program works.
+Build a landing page for Asianova Collective, LLC, a fresh ramen egg weekly delivery service running a beta in Oakland and Berkeley, CA. The page must communicate the product clearly, drive sign-ups via a native form (proxied to Google Forms), and explain how the beta program works.
 
 ---
 
@@ -92,26 +92,24 @@ Note: Since we're in beta, pricing may vary week to week.
 
 ---
 
-### 6. Sign-Up Form (embedded Airtable)
+### 6. Sign-Up Form (native, proxied to Google Forms)
 **Section heading:**
 > Join the beta
 
 **Subtext:**
 > We're currently accepting sign-ups in Oakland and Berkeley, CA.
 
-**Embedded form** (full-width iframe):
-```
-https://airtable.com/app0reAWbVwTy2hZQ/pagUFxDCJ9cuGJtGz/form
-```
-- Embed via `<iframe>` with `width="100%"` and adequate height (min `600px`)
+**Native form** styled to match the dark theme:
+- Custom `SignupForm` component with fields: name, email, phone, zip, eggs currently, eggs desired, why not
+- Submits via `/api/signup` Cloudflare Pages Function, which proxies to Google Forms
 - Section has `id="signup"` for anchor scrolling
-- Airtable embed params: append `?backgroundColor=transparent&viewControls=on` if supported
+- No auth required (Google Forms accepts anonymous POST)
 
 ---
 
 ### 7. Footer
 ```
-© 2026 Asianova Collective, Inc. All rights reserved.
+© 2026 Asianova Collective, LLC All rights reserved.
 ```
 - Minimal, centered or left-aligned
 - No extra links needed unless added later
@@ -149,6 +147,6 @@ ramen-eggs/
 - All sections in single `page.tsx`, assembled from components
 - "Join the Beta" CTA in Nav and Hero both use `href="#signup"` smooth scroll
 - Airtable iframe: test at mobile widths; may need `min-height` and `overflow` handling
-- No analytics, no cookies banner, no backend
+- No analytics, no cookies banner
 - `next/image` for hero photo
 - Responsive: mobile-first, single-column stack on small screens

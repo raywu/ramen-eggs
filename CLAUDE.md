@@ -2,7 +2,7 @@
 
 ## Business
 Weekly ramen egg delivery service, currently in beta in Oakland & Berkeley, CA.
-Sign-ups via native form, proxied to Airtable through Cloudflare Pages Functions.
+Sign-ups via native form, proxied to Google Forms through Cloudflare Pages Functions.
 
 ## Stack
 - Next.js 15 (App Router, SSG via `output: "export"`)
@@ -13,7 +13,7 @@ Sign-ups via native form, proxied to Airtable through Cloudflare Pages Functions
 
 ## Key URLs
 - Live site: `https://theasianova.com` / `https://www.theasianova.com`
-- Airtable form: `https://airtable.com/app0reAWbVwTy2hZQ/pagUFxDCJ9cuGJtGz/form`
+- Google Form: `https://docs.google.com/forms/d/e/1FAIpQLSc7c6kP2Bi0HXMM8-vtrsg-rMK5NeVaiNlM1i3UfEdakYkUvA/viewform`
 
 ## Brand Palette
 - Background: `#111111` (dark)
@@ -22,7 +22,7 @@ Sign-ups via native form, proxied to Airtable through Cloudflare Pages Functions
 - Borders: `#2A2A2A`
 
 ## Environment Variables
-- `AIRTABLE_PAT` — set in Cloudflare Pages dashboard; `.env*` files are gitignored
+- None required (Google Forms accepts anonymous POST); `.env*` files are gitignored
 
 ## Security
 - CORS restricted to `theasianova.com`, `www.theasianova.com`, `http://localhost` (with port)

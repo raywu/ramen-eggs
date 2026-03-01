@@ -1,6 +1,4 @@
-interface Env {
-  AIRTABLE_PAT: string;
-}
+type Env = Record<string, unknown>;
 
 interface SignupBody {
   name: string;
@@ -12,8 +10,16 @@ interface SignupBody {
   whyNot?: string;
 }
 
-const AIRTABLE_BASE_ID = "app0reAWbVwTy2hZQ";
-const AIRTABLE_TABLE_ID = "tbl2J2MAEBNL0KFnM";
+const GOOGLE_FORM_ID = "e/1FAIpQLSc7c6kP2Bi0HXMM8-vtrsg-rMK5NeVaiNlM1i3UfEdakYkUvA";
+const ENTRY_IDS = {
+  name: "entry.1878275050",
+  email: "entry.915034361",
+  phone: "entry.982918510",
+  zip: "entry.1612587858",
+  eggsCurrently: "entry.1344513166",
+  eggsDesired: "entry.1548593884",
+  whyNot: "entry.1390610783",
+} as const;
 
 const REQUIRED_FIELDS: (keyof SignupBody)[] = [
   "name",
@@ -58,7 +64,7 @@ export const onRequestOptions: PagesFunction<Env> = async ({ request }) => {
   });
 };
 
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+export const onRequestPost: PagesFunction<Env> = async ({ request }) => {
   const origin = request.headers.get("Origin");
   if (!isOriginAllowed(origin)) {
     return new Response(JSON.stringify({ error: "Forbidden" }), {
@@ -126,35 +132,31 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     );
   }
 
-  const airtablePayload = {
-    fields: {
-      "Your Name": body.name.trim(),
-      Email: body.email.trim(),
-      "Phone (for WhatsApp)": body.phone.trim(),
-      "Zip code": body.zip.trim(),
-      "How many ramen eggs do you eat every week?": body.eggsCurrently,
-      "How many ramen eggs would you like to eat every week?": body.eggsDesired,
-      "If you don't have as many ramen eggs as you'd like to, why not?":
-        body.whyNot?.trim() || "",
-    },
-  };
+  const params = new URLSearchParams();
+  params.set(ENTRY_IDS.name, body.name.trim());
+  params.set(ENTRY_IDS.email, body.email.trim());
+  params.set(ENTRY_IDS.phone, body.phone.trim());
+  params.set(ENTRY_IDS.zip, body.zip.trim());
+  params.set(ENTRY_IDS.eggsCurrently, body.eggsCurrently);
+  params.set(ENTRY_IDS.eggsDesired, body.eggsDesired);
+  if (body.whyNot?.trim()) {
+    params.set(ENTRY_IDS.whyNot, body.whyNot.trim());
+  }
 
   try {
     const res = await fetch(
-      `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`,
+      `https://docs.google.com/forms/d/${GOOGLE_FORM_ID}/formResponse`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${env.AIRTABLE_PAT}`,
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: JSON.stringify(airtablePayload),
+        body: params.toString(),
       }
     );
 
     if (!res.ok) {
-      const err = await res.text();
-      console.error("Airtable error:", err);
+      console.error("Google Forms error:", res.status);
       return new Response(
         JSON.stringify({ error: "Failed to submit signup" }),
         { status: 500, headers }
@@ -166,7 +168,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       headers,
     });
   } catch (err) {
-    console.error("Airtable request failed:", err);
+    console.error("Google Forms request failed:", err);
     return new Response(
       JSON.stringify({ error: "Failed to submit signup" }),
       { status: 500, headers }
