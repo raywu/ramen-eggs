@@ -2,7 +2,7 @@ const steps = [
   {
     n: 1,
     headline: "Sign up below",
-    body: 'We\'ll add you to our WhatsApp group, "Asianova Collective Ramen Egg Beta."',
+    body: 'We\'ll add you to our WhatsApp group, "Ramen Eggs Beta (Oakland / Berkeley)."',
   },
   {
     n: 2,
@@ -17,7 +17,7 @@ const steps = [
   {
     n: 4,
     headline: "Pick up your eggs",
-    body: "Collect your order throughout the week, or catch us at the South Berkeley Farmers' Market (Tuesdays on Adeline).",
+    body: "Collect your order on Saturday between 1pm - 3pm at a designated pickup location. (e.g. San Pablo Park)",
   },
 ];
 

@@ -83,10 +83,10 @@ Short feature list:
 
 **Steps:**
 
-1. **Sign up below** — we'll add you to our WhatsApp group, "Asianova Collective Ramen Egg Beta."
+1. **Sign up below** — we'll add you to our WhatsApp group, "Ramen Eggs Beta (Oakland / Berkeley)."
 2. **Get the weekly ping** — every week you'll receive a message with that week's pricing and an order reminder.
 3. **Confirm your order** — fill out the order form to lock in your quantity. Pricing is visible before you confirm.
-4. **Pick up your eggs** — collect your order throughout the week, or catch us at the **South Berkeley Farmers' Market** (Tuesdays on Adeline).
+4. **Pick up your eggs** — collect your order on Saturday between 1pm - 3pm at a designated pickup location. (e.g. San Pablo Park)
 
 Note: Since we're in beta, pricing may vary week to week.
 
