@@ -57,12 +57,12 @@ describe("OrderForm — gating", () => {
     expect(screen.getByText(/8:30\s*AM/i)).toBeInTheDocument();
   });
 
-  it("renders the form when ?preview=true even if window is closed", () => {
+  it("renders the form when ?preview=true on localhost", () => {
     mockIsOpen.mockReturnValue(false);
     mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
 
     Object.defineProperty(window, "location", {
-      value: { search: "?preview=true" },
+      value: { search: "?preview=true", hostname: "localhost" },
       writable: true,
     });
 
@@ -71,7 +71,29 @@ describe("OrderForm — gating", () => {
     expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
 
     Object.defineProperty(window, "location", {
-      value: { search: "" },
+      value: { search: "", hostname: "localhost" },
+      writable: true,
+    });
+  });
+
+  it("blocks ?preview=true on production hostname", () => {
+    mockIsOpen.mockReturnValue(false);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+
+    Object.defineProperty(window, "location", {
+      value: { search: "?preview=true", hostname: "theasianova.com" },
+      writable: true,
+    });
+
+    render(<OrderForm />);
+
+    expect(
+      screen.getByText(/orders are currently closed/i)
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Submit" })).not.toBeInTheDocument();
+
+    Object.defineProperty(window, "location", {
+      value: { search: "", hostname: "localhost" },
       writable: true,
     });
   });
