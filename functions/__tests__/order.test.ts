@@ -5,10 +5,8 @@ const GOOGLE_FORMS_URL =
 
 const validBody = {
   name: "Test User",
-  email: "test@example.com",
-  phone: "5105551234",
-  zip: "94612",
-  // TODO: add order-specific fields once entry IDs are provided
+  phone: "+14155551234",
+  quantity: "5",
 };
 
 const env = {};
@@ -50,7 +48,7 @@ describe("POST /api/order", () => {
   });
 
   it("returns 400 when required fields are missing", async () => {
-    const request = makeRequest("POST", { name: "Test", email: "" });
+    const request = makeRequest("POST", { name: "Test" });
     const res = await onRequestPost({ request, env });
 
     expect(res.status).toBe(400);
@@ -78,7 +76,9 @@ describe("POST /api/order", () => {
 
     const callArgs = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     const body = callArgs[1].body as string;
-    expect(body).toContain("entry.");
+    expect(body).toContain("entry.313849049=5");
+    expect(body).toContain("entry.761528982");
+    expect(body).toContain("entry.311114154=Test+User");
   });
 
   it("returns 500 when Google Forms request fails", async () => {
@@ -166,26 +166,15 @@ describe("CORS origin allowlist", () => {
 });
 
 describe("Backend validation", () => {
-  it("returns 400 for invalid email", async () => {
+  it("returns 400 for invalid quantity", async () => {
     const request = makeRequest("POST", {
       ...validBody,
-      email: "not-an-email",
+      quantity: "7",
     });
     const res = await onRequestPost({ request, env });
     expect(res.status).toBe(400);
     const data = await res.json();
-    expect(data.error).toBe("Invalid email address");
-  });
-
-  it("returns 400 for invalid zip code", async () => {
-    const request = makeRequest("POST", {
-      ...validBody,
-      zip: "9461",
-    });
-    const res = await onRequestPost({ request, env });
-    expect(res.status).toBe(400);
-    const data = await res.json();
-    expect(data.error).toBe("Invalid zip code");
+    expect(data.error).toBe("Invalid quantity");
   });
 
   it("returns 400 for short phone number", async () => {
@@ -204,7 +193,7 @@ describe("Backend validation", () => {
 
     const request = makeRequest("POST", {
       ...validBody,
-      phone: "+1 (510) 555-1234",
+      phone: "+1 (415) 555-1234",
     });
     const res = await onRequestPost({ request, env });
     expect(res.status).toBe(200);

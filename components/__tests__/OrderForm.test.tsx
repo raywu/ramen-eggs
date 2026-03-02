@@ -2,7 +2,6 @@ import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-// Mock the orderWindow module so we can control gating in tests
 vi.mock("@/lib/orderWindow", () => ({
   isOrderWindowOpen: vi.fn(),
   getNextOrderWindow: vi.fn(),
@@ -21,18 +20,13 @@ function mockFetch(ok: boolean, body: object = {}) {
   });
 }
 
-// Fill in the placeholder fields (name + email are always present)
 async function fillForm(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByPlaceholderText("Jane Doe"), "Test User");
+  await user.selectOptions(screen.getByRole("combobox"), "10");
   await user.type(
-    screen.getByPlaceholderText("jane@example.com"),
-    "test@example.com"
+    screen.getByPlaceholderText("+141533333333"),
+    "+14155551234"
   );
-  await user.type(
-    screen.getByPlaceholderText("+1 (510) 555-1234"),
-    "5105551234"
-  );
-  await user.type(screen.getByPlaceholderText("94612"), "94612");
 }
 
 describe("OrderForm — gating", () => {
@@ -43,7 +37,6 @@ describe("OrderForm — gating", () => {
 
   it("renders closed message when order window is not open", () => {
     mockIsOpen.mockReturnValue(false);
-    // Next Tuesday 2026-03-03 08:30 PST
     mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
 
     render(<OrderForm />);
@@ -60,7 +53,6 @@ describe("OrderForm — gating", () => {
 
     render(<OrderForm />);
 
-    // Should mention Tuesday and 8:30 AM
     expect(screen.getByText(/tuesday/i)).toBeInTheDocument();
     expect(screen.getByText(/8:30\s*AM/i)).toBeInTheDocument();
   });
@@ -89,13 +81,22 @@ describe("OrderForm — form rendering", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders core contact fields", () => {
+  it("renders all form fields", () => {
     render(<OrderForm />);
 
     expect(screen.getByText(/Your Name/)).toBeInTheDocument();
-    expect(screen.getByText(/^Email/)).toBeInTheDocument();
-    expect(screen.getByText(/Phone/)).toBeInTheDocument();
-    expect(screen.getByText(/Zip/i)).toBeInTheDocument();
+    expect(screen.getByText(/How many Ramen Eggs/)).toBeInTheDocument();
+    expect(screen.getByText(/WhatsApp Number/)).toBeInTheDocument();
+  });
+
+  it("renders quantity dropdown with correct options", () => {
+    render(<OrderForm />);
+
+    const select = screen.getByRole("combobox");
+    const options = [...select.querySelectorAll("option")].map(o => o.textContent);
+    expect(options).toContain("5");
+    expect(options).toContain("10");
+    expect(options).toContain("15");
   });
 
   it("has a submit button", () => {
@@ -182,7 +183,7 @@ describe("OrderForm — submission", () => {
     ).toBeEnabled();
   });
 
-  it("sends payload to /api/order", async () => {
+  it("sends correct payload to /api/order", async () => {
     const user = userEvent.setup();
     global.fetch = mockFetch(true, { success: true });
 
@@ -203,8 +204,7 @@ describe("OrderForm — submission", () => {
     const callArgs = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     const body = JSON.parse(callArgs[1].body);
     expect(body.name).toBe("Test User");
-    expect(body.email).toBe("test@example.com");
-    expect(body.phone).toBe("5105551234");
-    expect(body.zip).toBe("94612");
+    expect(body.phone).toBe("+14155551234");
+    expect(body.quantity).toBe("10");
   });
 });

@@ -6,12 +6,13 @@ import { isOrderWindowOpen, getNextOrderWindow } from "@/lib/orderWindow";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
+const QUANTITY_OPTIONS = ["5", "10", "15"];
+
 export default function OrderForm() {
   const [open, setOpen] = useState(() => isOrderWindowOpen(new Date()));
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Re-check the gate every 30 seconds so the form appears/disappears live
   useEffect(() => {
     const id = setInterval(() => {
       setOpen(isOrderWindowOpen(new Date()));
@@ -29,10 +30,8 @@ export default function OrderForm() {
 
     const payload = {
       name: data.get("name") as string,
-      email: data.get("email") as string,
       phone: data.get("phone") as string,
-      zip: data.get("zip") as string,
-      // TODO: add order-specific fields once Google Form entry IDs are provided
+      quantity: data.get("quantity") as string,
     };
 
     try {
@@ -73,7 +72,7 @@ export default function OrderForm() {
           Place an Order
         </h2>
         <p className="text-base opacity-70">
-          Fresh ramen eggs, made to order. Delivered weekly in Oakland &amp; Berkeley.
+          Fresh ramen eggs, made to order. Pickup Saturday 1PM–3PM in Oakland / Berkeley.
         </p>
 
         {status === "success" ? (
@@ -97,7 +96,7 @@ export default function OrderForm() {
               Order received!
             </h3>
             <p className="opacity-70">
-              We&apos;ll confirm your order in the WhatsApp group shortly.
+              We&apos;ll confirm your order on WhatsApp shortly.
             </p>
           </div>
         ) : (
@@ -112,39 +111,32 @@ export default function OrderForm() {
               />
             </FormField>
 
-            <FormField label="Email" required>
-              <input
-                type="email"
-                name="email"
-                required
-                className="form-input"
-                placeholder="jane@example.com"
-              />
+            <FormField
+              label="How many Ramen Eggs would you like?"
+              required
+              hint="Eat them within 7 days"
+            >
+              <select name="quantity" required className="form-input" defaultValue="">
+                <option value="" disabled>
+                  Select...
+                </option>
+                {QUANTITY_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
             </FormField>
 
-            <FormField label="Phone" required>
+            <FormField label="WhatsApp Number" required hint="e.g. +141533333333">
               <input
                 type="tel"
                 name="phone"
                 required
                 className="form-input"
-                placeholder="+1 (510) 555-1234"
+                placeholder="+141533333333"
               />
             </FormField>
-
-            <FormField label="Zip Code" required>
-              <input
-                type="text"
-                name="zip"
-                required
-                className="form-input"
-                placeholder="94612"
-                inputMode="numeric"
-                pattern="[0-9]{5}"
-              />
-            </FormField>
-
-            {/* TODO: Add order-specific fields once Google Form entry IDs are provided */}
 
             {status === "error" && (
               <div

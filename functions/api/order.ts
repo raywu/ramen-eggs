@@ -2,27 +2,19 @@ type Env = Record<string, unknown>;
 
 interface OrderBody {
   name: string;
-  email: string;
   phone: string;
-  zip: string;
-  // TODO: add order-specific fields once Google Form entry IDs are provided
+  quantity: string;
 }
 
 const GOOGLE_FORM_ID = "e/1FAIpQLSeKUZ2-OdTxR2wbVUo6-R2XvYZcydXLLelLn5KKbW8xkvc8qA";
 const ENTRY_IDS = {
-  name: "entry.PLACEHOLDER_NAME",
-  email: "entry.PLACEHOLDER_EMAIL",
-  phone: "entry.PLACEHOLDER_PHONE",
-  zip: "entry.PLACEHOLDER_ZIP",
-  // TODO: add order-specific entry IDs once Google Form details are provided
+  quantity: "entry.313849049",
+  phone: "entry.761528982",
+  name: "entry.311114154",
 } as const;
 
-const REQUIRED_FIELDS: (keyof OrderBody)[] = [
-  "name",
-  "email",
-  "phone",
-  "zip",
-];
+const REQUIRED_FIELDS: (keyof OrderBody)[] = ["name", "phone", "quantity"];
+const VALID_QUANTITIES = ["5", "10", "15"];
 
 const ALLOWED_ORIGINS = [
   "https://theasianova.com",
@@ -88,16 +80,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request }) => {
     );
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim())) {
+  if (!VALID_QUANTITIES.includes(body.quantity)) {
     return new Response(
-      JSON.stringify({ error: "Invalid email address" }),
-      { status: 400, headers }
-    );
-  }
-
-  if (!/^\d{5}$/.test(body.zip.trim())) {
-    return new Response(
-      JSON.stringify({ error: "Invalid zip code" }),
+      JSON.stringify({ error: "Invalid quantity" }),
       { status: 400, headers }
     );
   }
@@ -112,10 +97,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request }) => {
 
   const params = new URLSearchParams();
   params.set(ENTRY_IDS.name, body.name.trim());
-  params.set(ENTRY_IDS.email, body.email.trim());
   params.set(ENTRY_IDS.phone, body.phone.trim());
-  params.set(ENTRY_IDS.zip, body.zip.trim());
-  // TODO: set order-specific entry params once entry IDs are provided
+  params.set(ENTRY_IDS.quantity, body.quantity);
 
   try {
     const res = await fetch(
