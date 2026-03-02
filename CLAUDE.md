@@ -2,7 +2,7 @@
 
 ## Business
 Weekly ramen egg delivery service, currently in beta in Oakland & Berkeley, CA.
-Sign-ups via native form, proxied to Google Forms through Cloudflare Pages Functions.
+Sign-ups and orders via native forms, proxied to Google Forms through Cloudflare Pages Functions.
 
 ## Stack
 - Next.js 15 (App Router, SSG via `output: "export"`)
@@ -13,7 +13,15 @@ Sign-ups via native form, proxied to Google Forms through Cloudflare Pages Funct
 
 ## Key URLs
 - Live site: `https://theasianova.com` / `https://www.theasianova.com`
-- Google Form: `https://docs.google.com/forms/d/e/1FAIpQLSc7c6kP2Bi0HXMM8-vtrsg-rMK5NeVaiNlM1i3UfEdakYkUvA/viewform`
+- Signup Google Form: `https://docs.google.com/forms/d/e/1FAIpQLSc7c6kP2Bi0HXMM8-vtrsg-rMK5NeVaiNlM1i3UfEdakYkUvA/viewform`
+- Order Google Form: `https://docs.google.com/forms/d/e/1FAIpQLSeKUZ2-OdTxR2wbVUo6-R2XvYZcydXLLelLn5KKbW8xkvc8qA/viewform`
+
+## Order Form (`/order-form`)
+- Time-gated: open Tuesdays 8:30 AM – 10 PM PT only
+- Outside the window, shows a "closed" message with next opening time
+- Preview mode: append `?preview=true` on localhost only to bypass the time gate
+- Quantities: 5, 10, 15
+- `sitemap.xml` intentionally omits `/order-form` (time-gated page)
 
 ## Brand Palette
 - Background: `#111111` (dark)
@@ -26,7 +34,8 @@ Sign-ups via native form, proxied to Google Forms through Cloudflare Pages Funct
 
 ## Security
 - CORS restricted to `theasianova.com`, `www.theasianova.com`, `http://localhost` (with port)
-- Backend validation: email format, 5-digit zip, phone >= 10 digits
+- Signup backend validation: email format, 5-digit zip, phone >= 10 digits
+- Order backend validation: required name/phone/quantity, phone >= 10 digits, quantity in [5, 10, 15]
 
 ## SEO
 - `public/robots.txt` and `public/sitemap.xml` present
