@@ -57,6 +57,25 @@ describe("OrderForm — gating", () => {
     expect(screen.getByText(/8:30\s*AM/i)).toBeInTheDocument();
   });
 
+  it("renders the form when ?preview=true even if window is closed", () => {
+    mockIsOpen.mockReturnValue(false);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+
+    Object.defineProperty(window, "location", {
+      value: { search: "?preview=true" },
+      writable: true,
+    });
+
+    render(<OrderForm />);
+
+    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+
+    Object.defineProperty(window, "location", {
+      value: { search: "" },
+      writable: true,
+    });
+  });
+
   it("renders the form when order window is open", () => {
     mockIsOpen.mockReturnValue(true);
     mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));

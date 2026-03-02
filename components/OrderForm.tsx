@@ -8,7 +8,17 @@ type FormStatus = "idle" | "submitting" | "success" | "error";
 
 const QUANTITY_OPTIONS = ["5", "10", "15"];
 
+function usePreviewMode() {
+  const [preview, setPreview] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("preview") === "true") setPreview(true);
+  }, []);
+  return preview;
+}
+
 export default function OrderForm() {
+  const preview = usePreviewMode();
   const [open, setOpen] = useState(() => isOrderWindowOpen(new Date()));
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -55,7 +65,7 @@ export default function OrderForm() {
     }
   }
 
-  if (!open) {
+  if (!open && !preview) {
     return <ClosedMessage />;
   }
 
