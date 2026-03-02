@@ -149,3 +149,13 @@ ramen-eggs/
 - No analytics, no cookies banner
 - `next/image` for hero photo
 - Responsive: mobile-first, single-column stack on small screens
+
+---
+
+## Order Form — Future Implementation Notes
+
+### Google Sheets Environment Config (Option 2: Client-Side Fetch)
+- Publish a Google Sheet as CSV containing form config (field IDs, product list, pricing, etc.)
+- Client fetches the sheet at page load to hydrate the order form
+- No server-side env vars needed; config changes only require editing the Google Sheet
+- Keeps the current static export (`output: "export"`) and Cloudflare Pages setup intact
