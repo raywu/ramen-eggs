@@ -16,7 +16,7 @@ const props = [
       </svg>
     ),
     headline: "Gluten-free",
-    body: "Marinated in gluten-free soy sauce, mirin, and sugar. Nothing hidden.",
+    body: "Marinated in gluten-free soy sauce, mirin, and sugar.",
   },
   {
     icon: (

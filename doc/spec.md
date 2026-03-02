@@ -57,7 +57,7 @@ Three concise callouts below the hero fold:
 | Icon | Headline | Body |
 |------|----------|------|
 | Egg | Made to order | Never pre-made. Each batch is crafted fresh after you place your order. |
-| Check | Gluten-free | Marinated in gluten-free soy sauce, mirin, and sugar. Nothing hidden. |
+| Check | Gluten-free | Marinated in gluten-free soy sauce, mirin, and sugar. |
 | Calendar | Eat within a week | These eggs are genuinely fresh. Best consumed within 7 days of pickup. |
 
 ---
