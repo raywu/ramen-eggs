@@ -12,8 +12,12 @@ function usePreviewMode() {
   const [preview, setPreview] = useState(false);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const isLocal = window.location.hostname === "localhost" ||
-                    window.location.hostname === "127.0.0.1";
+    const host = window.location.hostname;
+    const isLocal = host === "localhost" ||
+                    host === "127.0.0.1" ||
+                    host.startsWith("192.168.") ||
+                    host.startsWith("10.") ||
+                    /^172\.(1[6-9]|2\d|3[01])\./.test(host);
     if (params.get("preview") === "true" && isLocal) setPreview(true);
   }, []);
   return preview;

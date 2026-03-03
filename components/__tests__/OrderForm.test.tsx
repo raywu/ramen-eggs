@@ -76,6 +76,63 @@ describe("OrderForm — gating", () => {
     });
   });
 
+  it("renders the form when ?preview=true on private IP (192.168.x.x)", () => {
+    mockIsOpen.mockReturnValue(false);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+
+    Object.defineProperty(window, "location", {
+      value: { search: "?preview=true", hostname: "192.168.68.90" },
+      writable: true,
+    });
+
+    render(<OrderForm />);
+
+    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+
+    Object.defineProperty(window, "location", {
+      value: { search: "", hostname: "localhost" },
+      writable: true,
+    });
+  });
+
+  it("renders the form when ?preview=true on 10.x.x.x", () => {
+    mockIsOpen.mockReturnValue(false);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+
+    Object.defineProperty(window, "location", {
+      value: { search: "?preview=true", hostname: "10.0.0.1" },
+      writable: true,
+    });
+
+    render(<OrderForm />);
+
+    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+
+    Object.defineProperty(window, "location", {
+      value: { search: "", hostname: "localhost" },
+      writable: true,
+    });
+  });
+
+  it("renders the form when ?preview=true on 172.16.x.x", () => {
+    mockIsOpen.mockReturnValue(false);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+
+    Object.defineProperty(window, "location", {
+      value: { search: "?preview=true", hostname: "172.16.0.1" },
+      writable: true,
+    });
+
+    render(<OrderForm />);
+
+    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+
+    Object.defineProperty(window, "location", {
+      value: { search: "", hostname: "localhost" },
+      writable: true,
+    });
+  });
+
   it("blocks ?preview=true on production hostname", () => {
     mockIsOpen.mockReturnValue(false);
     mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
