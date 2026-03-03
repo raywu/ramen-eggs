@@ -40,9 +40,15 @@ const ALLOWED_ORIGINS = [
 
 function isOriginAllowed(origin: string | null): boolean {
   if (!origin) return false;
-  return ALLOWED_ORIGINS.some(
+  if (ALLOWED_ORIGINS.some(
     (allowed) => origin === allowed || origin.startsWith(allowed + ":")
-  );
+  )) return true;
+  try {
+    const host = new URL(origin).hostname;
+    return host.startsWith("192.168.") ||
+           host.startsWith("10.") ||
+           /^172\.(1[6-9]|2\d|3[01])\./.test(host);
+  } catch { return false; }
 }
 
 function corsHeaders(origin: string | null) {

@@ -145,6 +145,25 @@ describe("CORS origin allowlist", () => {
     expect(res.status).toBe(403);
   });
 
+  it("allows private network IP origin", async () => {
+    global.fetch = vi.fn().mockResolvedValue({ ok: true });
+
+    const request = new Request("http://192.168.68.90:8788/api/order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: "http://192.168.68.90:8788",
+      },
+      body: JSON.stringify(validBody),
+    });
+
+    const res = await onRequestPost({ request, env });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Access-Control-Allow-Origin")).toBe(
+      "http://192.168.68.90:8788"
+    );
+  });
+
   it("allows localhost with port", async () => {
     global.fetch = vi.fn().mockResolvedValue({ ok: true });
 
