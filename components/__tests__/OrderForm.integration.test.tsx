@@ -8,9 +8,17 @@ import OrderForm from "../OrderForm";
 describe("OrderForm — time-gate integration", () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ success: true }),
+    global.fetch = vi.fn().mockImplementation((url: string) => {
+      if (url === "/api/config") {
+        return Promise.resolve({
+          ok: false,
+          json: () => Promise.resolve({}),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ success: true }),
+      });
     });
   });
 
