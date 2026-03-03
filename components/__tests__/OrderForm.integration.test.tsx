@@ -32,7 +32,7 @@ describe("OrderForm — time-gate integration", () => {
     // Tue Jan 6 2026, 8:30 AM PST = 16:30 UTC
     vi.setSystemTime(new Date("2026-01-06T16:30:00Z"));
     render(<OrderForm />);
-    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
     expect(screen.queryByText(/orders are currently closed/i)).not.toBeInTheDocument();
   });
 
@@ -40,7 +40,7 @@ describe("OrderForm — time-gate integration", () => {
     // Tue Jan 6 2026, 9:59 PM PST = next day 05:59 UTC
     vi.setSystemTime(new Date("2026-01-07T05:59:00Z"));
     render(<OrderForm />);
-    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
   });
 
   it("shows closed message when window just closed (Tue 10:00 PM PT)", () => {
@@ -48,7 +48,7 @@ describe("OrderForm — time-gate integration", () => {
     vi.setSystemTime(new Date("2026-01-07T06:00:00Z"));
     render(<OrderForm />);
     expect(screen.getByText(/orders are currently closed/i)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Submit" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument();
   });
 
   it("shows closed message on wrong day (Mon 12:00 PM PT)", () => {
@@ -56,7 +56,7 @@ describe("OrderForm — time-gate integration", () => {
     vi.setSystemTime(new Date("2026-01-05T20:00:00Z"));
     render(<OrderForm />);
     expect(screen.getByText(/orders are currently closed/i)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Submit" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument();
   });
 
   it("shows closed message one minute before open (Tue 8:29 AM PT)", () => {

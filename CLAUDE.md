@@ -48,7 +48,7 @@ Sign-ups and orders via native forms, proxied to Google Forms through Cloudflare
 ## Development
 ```sh
 npm run dev                # Next.js dev server (frontend only)
-npm run preview            # Build + serve with Pages Functions (reads .dev.vars)
+npm run preview            # Next.js dev + wrangler proxy (HMR + Pages Functions, reads .dev.vars)
 npm test                   # Run tests
 ```
 

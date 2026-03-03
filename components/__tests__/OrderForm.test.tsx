@@ -77,7 +77,7 @@ describe("OrderForm — gating", () => {
     expect(
       screen.getByText(/orders are currently closed/i)
     ).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Submit" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument();
   });
 
   it("shows next order window time when closed", () => {
@@ -101,7 +101,7 @@ describe("OrderForm — gating", () => {
 
     render(<OrderForm />);
 
-    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
 
     Object.defineProperty(window, "location", {
       value: { search: "", hostname: "localhost" },
@@ -120,7 +120,7 @@ describe("OrderForm — gating", () => {
 
     render(<OrderForm />);
 
-    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
 
     Object.defineProperty(window, "location", {
       value: { search: "", hostname: "localhost" },
@@ -139,7 +139,7 @@ describe("OrderForm — gating", () => {
 
     render(<OrderForm />);
 
-    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
 
     Object.defineProperty(window, "location", {
       value: { search: "", hostname: "localhost" },
@@ -158,7 +158,7 @@ describe("OrderForm — gating", () => {
 
     render(<OrderForm />);
 
-    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
 
     Object.defineProperty(window, "location", {
       value: { search: "", hostname: "localhost" },
@@ -180,7 +180,7 @@ describe("OrderForm — gating", () => {
     expect(
       screen.getByText(/orders are currently closed/i)
     ).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Submit" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument();
 
     Object.defineProperty(window, "location", {
       value: { search: "", hostname: "localhost" },
@@ -194,7 +194,7 @@ describe("OrderForm — gating", () => {
 
     render(<OrderForm />);
 
-    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
     expect(
       screen.queryByText(/orders are currently closed/i)
     ).not.toBeInTheDocument();
@@ -233,7 +233,7 @@ describe("OrderForm — form rendering", () => {
   it("has a submit button", () => {
     render(<OrderForm />);
     expect(
-      screen.getByRole("button", { name: "Submit" })
+      screen.getByRole("button", { name: "Place Order" })
     ).toBeInTheDocument();
   });
 });
@@ -255,10 +255,10 @@ describe("OrderForm — submission", () => {
 
     render(<OrderForm />);
     await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Place Order" }));
 
     expect(
-      screen.getByRole("button", { name: "Submitting..." })
+      screen.getByRole("button", { name: "Placing Order..." })
     ).toBeDisabled();
   });
 
@@ -268,14 +268,14 @@ describe("OrderForm — submission", () => {
 
     render(<OrderForm />);
     await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Place Order" }));
 
     await waitFor(() => {
       expect(screen.getByText(/order received/i)).toBeInTheDocument();
     });
 
     expect(
-      screen.queryByRole("button", { name: "Submit" })
+      screen.queryByRole("button", { name: "Place Order" })
     ).not.toBeInTheDocument();
   });
 
@@ -285,7 +285,7 @@ describe("OrderForm — submission", () => {
 
     render(<OrderForm />);
     await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Place Order" }));
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent("Server error");
@@ -300,7 +300,7 @@ describe("OrderForm — submission", () => {
 
     render(<OrderForm />);
     await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Place Order" }));
 
     await waitFor(() => {
       expect(screen.getByText("Try again")).toBeInTheDocument();
@@ -310,7 +310,7 @@ describe("OrderForm — submission", () => {
 
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Submit" })
+      screen.getByRole("button", { name: "Place Order" })
     ).toBeEnabled();
   });
 
@@ -320,7 +320,7 @@ describe("OrderForm — submission", () => {
 
     render(<OrderForm />);
     await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Place Order" }));
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(

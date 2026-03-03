@@ -65,7 +65,7 @@ describe("SignupForm", () => {
   it("has a submit button", () => {
     render(<SignupForm />);
     expect(
-      screen.getByRole("button", { name: "Submit" })
+      screen.getByRole("button", { name: "Join the Beta" })
     ).toBeInTheDocument();
   });
 
@@ -75,10 +75,10 @@ describe("SignupForm", () => {
 
     render(<SignupForm />);
     await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Join the Beta" }));
 
     expect(
-      screen.getByRole("button", { name: "Submitting..." })
+      screen.getByRole("button", { name: "Joining..." })
     ).toBeDisabled();
   });
 
@@ -88,14 +88,14 @@ describe("SignupForm", () => {
 
     render(<SignupForm />);
     await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Join the Beta" }));
 
     await waitFor(() => {
       expect(screen.getByText("You're in!")).toBeInTheDocument();
     });
 
     expect(
-      screen.queryByRole("button", { name: "Submit" })
+      screen.queryByRole("button", { name: "Join the Beta" })
     ).not.toBeInTheDocument();
   });
 
@@ -105,7 +105,7 @@ describe("SignupForm", () => {
 
     render(<SignupForm />);
     await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Join the Beta" }));
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent("Server error");
@@ -120,7 +120,7 @@ describe("SignupForm", () => {
 
     render(<SignupForm />);
     await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Join the Beta" }));
 
     await waitFor(() => {
       expect(screen.getByText("Try again")).toBeInTheDocument();
@@ -130,7 +130,7 @@ describe("SignupForm", () => {
 
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Submit" })
+      screen.getByRole("button", { name: "Join the Beta" })
     ).toBeEnabled();
   });
 
@@ -140,7 +140,7 @@ describe("SignupForm", () => {
 
     render(<SignupForm />);
     await fillForm(user);
-    await user.click(screen.getByRole("button", { name: "Submit" }));
+    await user.click(screen.getByRole("button", { name: "Join the Beta" }));
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith("/api/signup", {

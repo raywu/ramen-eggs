@@ -200,13 +200,13 @@ export default function SignupForm() {
             <button
               type="submit"
               disabled={status === "submitting"}
-              className="self-start text-base font-medium px-6 py-3 rounded-md transition-all hover:brightness-110 hover:shadow-[0_0_16px_rgba(255,92,56,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full md:w-auto md:self-start text-base font-medium px-6 py-3 rounded-md transition-all hover:brightness-110 hover:shadow-[0_0_16px_rgba(255,92,56,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: "var(--color-accent)",
                 color: "var(--color-bg)",
               }}
             >
-              {status === "submitting" ? "Submitting..." : "Submit"}
+              {status === "submitting" ? "Joining..." : "Join the Beta"}
             </button>
           </form>
         )}
