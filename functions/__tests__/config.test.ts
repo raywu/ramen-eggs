@@ -25,8 +25,11 @@ const sheetData = {
   majorDimension: "ROWS",
   values: [
     ["key", "value"],
-    ["open_day", "Tuesday"],
-    ["open_time", "08:30"],
+    ["unit_price", "$1.50"],
+    ["pickup_location", "San Pablo Park"],
+    ["form_responses_sheet_url", "https://docs.google.com/secret"],
+    ["whatsapp_beta_invite_link", "https://chat.whatsapp.com/secret"],
+    ["order_deadline", "10:00 PM"],
   ],
 };
 
@@ -48,7 +51,7 @@ function makeRequest(origin = "https://theasianova.com") {
 }
 
 describe("GET /api/config", () => {
-  it("returns sheet data as JSON when auth succeeds", async () => {
+  it("returns only public keys from sheet data", async () => {
     global.fetch = vi.fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ access_token: "tok" }) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(sheetData) });
@@ -57,7 +60,13 @@ describe("GET /api/config", () => {
     expect(res.status).toBe(200);
 
     const data = await res.json();
-    expect(data).toEqual(sheetData);
+    const keys = data.values.slice(1).map((r: string[]) => r[0]);
+    expect(keys).toContain("unit_price");
+    expect(keys).toContain("pickup_location");
+    expect(keys).toContain("order_deadline");
+    expect(keys).not.toContain("form_responses_sheet_url");
+    expect(keys).not.toContain("whatsapp_beta_invite_link");
+    expect(data.values[0]).toEqual(["key", "value"]);
   });
 
   it("returns 500 when env vars are missing", async () => {
@@ -155,6 +164,18 @@ describe("CORS origin allowlist", () => {
       env: validEnv,
     });
     expect(res.status).toBe(403);
+  });
+
+  it("allows GET with no Origin header (same-origin)", async () => {
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ access_token: "tok" }) })
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(sheetData) });
+
+    const request = new Request("https://theasianova.com/api/config", {
+      method: "GET",
+    });
+    const res = await onRequestGet({ request, env: validEnv });
+    expect(res.status).toBe(200);
   });
 
   it("allows localhost with port", async () => {

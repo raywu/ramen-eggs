@@ -3,6 +3,7 @@
 import { useState, useEffect, type FormEvent } from "react";
 import FormField from "./FormField";
 import { isOrderWindowOpen, getNextOrderWindow } from "@/lib/orderWindow";
+import { parseConfigResponse, computePricing, getNextPickupDate } from "@/lib/config";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
@@ -24,6 +25,16 @@ export default function OrderForm() {
   const [open, setOpen] = useState(() => isOrderWindowOpen(new Date()));
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [config, setConfig] = useState<Record<string, string> | null>(null);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.values) setConfig(parseConfigResponse(data.values));
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -83,9 +94,13 @@ export default function OrderForm() {
         >
           Place an Order
         </h2>
-        <p className="text-base opacity-70">
-          Fresh ramen eggs, made to order. Pickup Saturday 1PM–3PM in Oakland / Berkeley.
-        </p>
+        {config ? (
+          <OrderInfo config={config} />
+        ) : (
+          <p className="text-base opacity-70">
+            Fresh ramen eggs, made to order. Pickup Saturday 1PM–3PM in Oakland / Berkeley.
+          </p>
+        )}
 
         {status === "success" ? (
           <div
@@ -237,5 +252,50 @@ function ClosedMessage() {
         <p className="text-sm opacity-50">Check back then to place your order!</p>
       </div>
     </section>
+  );
+}
+
+const QUANTITIES = [5, 10, 15];
+
+function OrderInfo({ config }: { config: Record<string, string> }) {
+  const pricing = config.unit_price
+    ? computePricing(config.unit_price, QUANTITIES)
+    : [];
+  const pickupDate = getNextPickupDate(new Date());
+  const pickupWindow = config.pickup_window ?? "";
+  const pickupLocation = config.pickup_location ?? "";
+  const deadline = config.order_deadline ?? "";
+
+  return (
+    <div className="flex flex-col gap-3" data-testid="order-info">
+      <p className="text-base opacity-70">Fresh ramen eggs, made to order.</p>
+      {pricing.length > 0 && (
+        <ul className="flex flex-col gap-1.5">
+          {pricing.map(({ qty, total }) => (
+            <li key={qty} className="flex items-center gap-2 text-sm opacity-70">
+              <span
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: "var(--color-accent)" }}
+              />
+              {qty} eggs — ${total}
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="flex flex-col gap-1 text-sm opacity-50">
+        {deadline && <p>Orders close tonight at {deadline}.</p>}
+        {(pickupWindow || pickupLocation) && (
+          <p>
+            Pickup: {pickupDate}
+            {pickupWindow ? `, ${pickupWindow}` : ""}
+            {pickupLocation ? ` at ${pickupLocation}` : ""}.
+          </p>
+        )}
+        <p>
+          Payment via Venmo only — you&apos;ll get a link after we process your
+          order.
+        </p>
+      </div>
+    </div>
   );
 }

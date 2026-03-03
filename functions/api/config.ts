@@ -8,6 +8,14 @@ interface ConfigEnv {
 
 const SHEETS_API = "https://sheets.googleapis.com/v4/spreadsheets";
 
+const PUBLIC_KEYS = new Set([
+  "unit_price",
+  "bundles",
+  "order_deadline",
+  "pickup_location",
+  "pickup_window",
+]);
+
 const ALLOWED_ORIGINS = [
   "https://theasianova.com",
   "https://www.theasianova.com",
@@ -34,7 +42,7 @@ export const onRequestOptions: PagesFunction<ConfigEnv> = async ({
   request,
 }) => {
   const origin = request.headers.get("Origin");
-  if (!isOriginAllowed(origin)) {
+  if (origin && !isOriginAllowed(origin)) {
     return new Response(null, { status: 403 });
   }
   return new Response(null, {
@@ -48,7 +56,7 @@ export const onRequestGet: PagesFunction<ConfigEnv> = async ({
   env,
 }) => {
   const origin = request.headers.get("Origin");
-  if (!isOriginAllowed(origin)) {
+  if (origin && !isOriginAllowed(origin)) {
     return new Response(JSON.stringify({ error: "Forbidden" }), {
       status: 403,
       headers: { "Content-Type": "application/json" },
@@ -88,7 +96,15 @@ export const onRequestGet: PagesFunction<ConfigEnv> = async ({
       );
     }
 
-    const data = await res.json();
+    const data: { values?: string[][] } = await res.json();
+
+    if (data.values) {
+      data.values = [
+        data.values[0],
+        ...data.values.slice(1).filter((row) => PUBLIC_KEYS.has(row[0])),
+      ];
+    }
+
     return new Response(JSON.stringify(data), { status: 200, headers });
   } catch (err) {
     console.error("Config fetch failed:", err);
