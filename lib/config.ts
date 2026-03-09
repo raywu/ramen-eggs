@@ -9,6 +9,19 @@ export function parseConfigResponse(values: string[][]): Record<string, string> 
   return map;
 }
 
+const DEFAULT_BUNDLES = [5, 10, 15];
+
+export function parseBundles(str: string): number[] {
+  try {
+    const parsed = JSON.parse(str);
+    if (!Array.isArray(parsed)) return DEFAULT_BUNDLES;
+    const nums = parsed.filter((x): x is number => typeof x === "number");
+    return nums.length > 0 ? nums : DEFAULT_BUNDLES;
+  } catch {
+    return DEFAULT_BUNDLES;
+  }
+}
+
 export function computePricing(
   unitPriceStr: string,
   quantities: number[],
@@ -21,7 +34,11 @@ export function computePricing(
   }));
 }
 
-export function getNextPickupDate(now: Date): string {
+const DOW_MAP: Record<string, number> = {
+  Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6,
+};
+
+export function getNextPickupDate(now: Date, dow?: string): string {
   const dayFmt = new Intl.DateTimeFormat("en-US", {
     timeZone: TIMEZONE,
     weekday: "short",
@@ -31,9 +48,8 @@ export function getNextPickupDate(now: Date): string {
   };
 
   const ptDay = dayMap[dayFmt.format(now)] ?? 0;
-  const SATURDAY = 6;
-  let daysUntil = (SATURDAY - ptDay + 7) % 7;
-  if (daysUntil === 0) daysUntil = 0; // Saturday → same day
+  const targetDay = (dow && dow in DOW_MAP) ? DOW_MAP[dow] : 6;
+  const daysUntil = (targetDay - ptDay + 7) % 7;
 
   const dateFmt = new Intl.DateTimeFormat("en-US", {
     timeZone: TIMEZONE,

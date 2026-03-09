@@ -27,9 +27,14 @@ const sheetData = {
     ["key", "value"],
     ["unit_price", "$1.50"],
     ["pickup_location", "San Pablo Park"],
+    ["pickup_window_start", "1:00 PM"],
+    ["pickup_window_end", "3:00 PM PT"],
+    ["pickup_dow", "Saturday"],
+    ["order_dow", "Tuesday"],
+    ["bundles", "[5, 10, 15]"],
     ["form_responses_sheet_url", "https://docs.google.com/secret"],
     ["whatsapp_beta_invite_link", "https://chat.whatsapp.com/secret"],
-    ["order_deadline", "10:00 PM"],
+    ["order_deadline", "10:00 PM PT"],
   ],
 };
 
@@ -63,6 +68,11 @@ describe("GET /api/config", () => {
     const keys = data.values.slice(1).map((r: string[]) => r[0]);
     expect(keys).toContain("unit_price");
     expect(keys).toContain("pickup_location");
+    expect(keys).toContain("pickup_window_start");
+    expect(keys).toContain("pickup_window_end");
+    expect(keys).toContain("pickup_dow");
+    expect(keys).toContain("order_dow");
+    expect(keys).toContain("bundles");
     expect(keys).toContain("order_deadline");
     expect(keys).not.toContain("form_responses_sheet_url");
     expect(keys).not.toContain("whatsapp_beta_invite_link");

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseConfigResponse, computePricing, getNextPickupDate } from "../config";
+import { parseConfigResponse, computePricing, getNextPickupDate, parseBundles } from "../config";
 
 describe("parseConfigResponse", () => {
   it("converts values array to key-value map", () => {
@@ -69,6 +69,32 @@ describe("computePricing", () => {
   });
 });
 
+describe("parseBundles", () => {
+  it("parses valid JSON array", () => {
+    expect(parseBundles("[5, 10, 15]")).toEqual([5, 10, 15]);
+  });
+
+  it("parses single-element array", () => {
+    expect(parseBundles("[3]")).toEqual([3]);
+  });
+
+  it("returns fallback for invalid JSON", () => {
+    expect(parseBundles("not json")).toEqual([5, 10, 15]);
+  });
+
+  it("returns fallback for empty string", () => {
+    expect(parseBundles("")).toEqual([5, 10, 15]);
+  });
+
+  it("returns fallback for non-array JSON", () => {
+    expect(parseBundles('{"a":1}')).toEqual([5, 10, 15]);
+  });
+
+  it("filters out non-number elements", () => {
+    expect(parseBundles('[3, "foo", 6]')).toEqual([3, 6]);
+  });
+});
+
 describe("getNextPickupDate", () => {
   it("returns same-week Saturday when called on Tuesday", () => {
     // Tue Mar 3 2026, 12:00 PM PST = 20:00 UTC
@@ -105,5 +131,36 @@ describe("getNextPickupDate", () => {
     // Sat Mar 7 2026, 11:00 PM PST = Sun Mar 8 07:00 UTC
     const result = getNextPickupDate(new Date("2026-03-08T07:00:00Z"));
     expect(result).toBe("Saturday, March 7");
+  });
+
+  it("returns next Sunday when called on Tuesday with dow='Sunday'", () => {
+    // Tue Mar 3 2026, 12:00 PM PST = 20:00 UTC
+    const result = getNextPickupDate(new Date("2026-03-03T20:00:00Z"), "Sunday");
+    expect(result).toBe("Sunday, March 8");
+  });
+
+  it("returns same-day Sunday when called on Sunday with dow='Sunday'", () => {
+    // Sun Mar 8 2026, 10:00 AM PST = 18:00 UTC
+    const result = getNextPickupDate(new Date("2026-03-08T18:00:00Z"), "Sunday");
+    expect(result).toBe("Sunday, March 8");
+  });
+
+  it("returns next Sunday when called on Monday with dow='Sunday'", () => {
+    // Mon Mar 2 2026, 12:00 PM PST = 20:00 UTC
+    const result = getNextPickupDate(new Date("2026-03-02T20:00:00Z"), "Sunday");
+    expect(result).toBe("Sunday, March 8");
+  });
+
+  it("falls back to Saturday for invalid dow", () => {
+    const result = getNextPickupDate(new Date("2026-03-03T20:00:00Z"), "Funday");
+    expect(result).toBe("Saturday, March 7");
+  });
+
+  it("output day name matches dow parameter", () => {
+    const tue = new Date("2026-03-03T20:00:00Z");
+    expect(getNextPickupDate(tue, "Sunday")).toMatch(/^Sunday,/);
+    expect(getNextPickupDate(tue, "Saturday")).toMatch(/^Saturday,/);
+    const sun = new Date("2026-03-08T18:00:00Z");
+    expect(getNextPickupDate(sun, "Sunday")).toMatch(/^Sunday,/);
   });
 });
