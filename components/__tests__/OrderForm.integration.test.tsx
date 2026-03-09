@@ -1,9 +1,20 @@
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import OrderForm from "../OrderForm";
 
 // No mock of @/lib/orderWindow — exercises the real time-gate logic.
+
+function mockConfigResponse(config: Record<string, string>) {
+  const values = [
+    ["key", "value"],
+    ...Object.entries(config),
+  ];
+  return {
+    ok: true,
+    json: () => Promise.resolve({ values }),
+  };
+}
 
 describe("OrderForm — time-gate integration", () => {
   beforeEach(() => {
@@ -66,5 +77,73 @@ describe("OrderForm — time-gate integration", () => {
     expect(screen.getByText(/orders are currently closed/i)).toBeInTheDocument();
     expect(screen.getByText(/tuesday/i)).toBeInTheDocument();
     expect(screen.getByText(/8:30\s*AM/i)).toBeInTheDocument();
+  });
+});
+
+describe("OrderForm — config-driven bundles", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    // Tue Jan 6 2026, 12:00 PM PST = 20:00 UTC (inside order window)
+    vi.setSystemTime(new Date("2026-01-06T20:00:00Z"));
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it("uses bundles from config for dropdown options", async () => {
+    global.fetch = vi.fn().mockImplementation((url: string) => {
+      if (url === "/api/config") {
+        return Promise.resolve(mockConfigResponse({
+          unit_price: "$2.00",
+          bundles: "[3, 6, 9]",
+        }));
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    render(<OrderForm />);
+    await waitFor(() => {
+      const options = screen.getAllByRole("option").filter(o => o.getAttribute("value") !== "");
+      expect(options.map(o => o.textContent)).toEqual(["3", "6", "9"]);
+    });
+  });
+
+  it("uses bundles from config for pricing display", async () => {
+    global.fetch = vi.fn().mockImplementation((url: string) => {
+      if (url === "/api/config") {
+        return Promise.resolve(mockConfigResponse({
+          unit_price: "$2.00",
+          bundles: "[3, 6, 9]",
+        }));
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    render(<OrderForm />);
+    await waitFor(() => {
+      expect(screen.getByText(/3 eggs — \$6\.00/)).toBeInTheDocument();
+      expect(screen.getByText(/6 eggs — \$12\.00/)).toBeInTheDocument();
+      expect(screen.getByText(/9 eggs — \$18\.00/)).toBeInTheDocument();
+    });
+  });
+
+  it("falls back to default bundles when config has no bundles key", async () => {
+    global.fetch = vi.fn().mockImplementation((url: string) => {
+      if (url === "/api/config") {
+        return Promise.resolve(mockConfigResponse({
+          unit_price: "$1.50",
+        }));
+      }
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    });
+
+    render(<OrderForm />);
+    await waitFor(() => {
+      const options = screen.getAllByRole("option").filter(o => o.getAttribute("value") !== "");
+      expect(options.map(o => o.textContent)).toEqual(["5", "10", "15"]);
+    });
   });
 });

@@ -13,7 +13,10 @@ const PUBLIC_KEYS = new Set([
   "bundles",
   "order_deadline",
   "pickup_location",
-  "pickup_window",
+  "pickup_window_start",
+  "pickup_window_end",
+  "pickup_dow",
+  "order_dow",
 ]);
 
 const ALLOWED_ORIGINS = [

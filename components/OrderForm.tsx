@@ -3,11 +3,11 @@
 import { useState, useEffect, type FormEvent } from "react";
 import FormField from "./FormField";
 import { isOrderWindowOpen, getNextOrderWindow } from "@/lib/orderWindow";
-import { parseConfigResponse, computePricing, getNextPickupDate } from "@/lib/config";
+import { parseConfigResponse, computePricing, getNextPickupDate, parseBundles } from "@/lib/config";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
-const QUANTITY_OPTIONS = ["5", "10", "15"];
+const DEFAULT_QUANTITY_OPTIONS = ["5", "10", "15"];
 
 function usePreviewMode() {
   const [preview, setPreview] = useState(false);
@@ -30,6 +30,12 @@ export default function OrderForm() {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [config, setConfig] = useState<Record<string, string> | null>(null);
+
+  // Defaults shown until config fetch resolves; options may swap if config
+  // defines different bundles. Acceptable since the form requires re-selection.
+  const quantityOptions = config?.bundles
+    ? parseBundles(config.bundles).map(String)
+    : DEFAULT_QUANTITY_OPTIONS;
 
   useEffect(() => {
     fetch("/api/config")
@@ -151,7 +157,7 @@ export default function OrderForm() {
                 <option value="" disabled>
                   Select...
                 </option>
-                {QUANTITY_OPTIONS.map((opt) => (
+                {quantityOptions.map((opt) => (
                   <option key={opt} value={opt}>
                     {opt}
                   </option>
@@ -259,14 +265,17 @@ function ClosedMessage() {
   );
 }
 
-const QUANTITIES = [5, 10, 15];
-
 function OrderInfo({ config }: { config: Record<string, string> }) {
+  const quantities = config.bundles ? parseBundles(config.bundles) : [5, 10, 15];
   const pricing = config.unit_price
-    ? computePricing(config.unit_price, QUANTITIES)
+    ? computePricing(config.unit_price, quantities)
     : [];
-  const pickupDate = getNextPickupDate(new Date());
-  const pickupWindow = config.pickup_window ?? "";
+  const pickupDate = getNextPickupDate(new Date(), config.pickup_dow);
+  const pickupWindowStart = (config.pickup_window_start ?? "").replace(/ PT$/, "");
+  const pickupWindowEnd = config.pickup_window_end ?? "";
+  const pickupWindow = pickupWindowStart && pickupWindowEnd
+    ? `${pickupWindowStart} – ${pickupWindowEnd}`
+    : "";
   const pickupLocation = config.pickup_location ?? "";
   const deadline = config.order_deadline ?? "";
 
