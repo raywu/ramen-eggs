@@ -88,6 +88,15 @@ export default function OrderForm() {
     }
   }
 
+  if (!preview && config?.store_status === "closed") {
+    return (
+      <StoreClosedMessage
+        note={config.store_closure_note}
+        reopenDate={config.store_reopen_date}
+      />
+    );
+  }
+
   if (!open && !preview) {
     return <ClosedMessage />;
   }
@@ -208,6 +217,41 @@ export default function OrderForm() {
               {status === "submitting" ? "Placing Order..." : "Place Order"}
             </button>
           </form>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function StoreClosedMessage({ note, reopenDate }: { note?: string; reopenDate?: string }) {
+  return (
+    <section
+      className="py-20 px-6 md:px-12 lg:px-24 border-t"
+      style={{ borderColor: "var(--color-border)" }}
+    >
+      <div className="max-w-2xl mx-auto flex flex-col items-center gap-6 text-center">
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
+          style={{
+            backgroundColor: "var(--color-border)",
+          }}
+        >
+          🥚
+        </div>
+        <h2
+          className="text-2xl md:text-3xl font-bold leading-tight"
+          style={{ fontFamily: "var(--font-wordmark)" }}
+        >
+          {note || "We're temporarily closed"}
+        </h2>
+        {reopenDate && (
+          <p className="text-base opacity-70">
+            We&apos;ll be back on{" "}
+            <span className="font-semibold" style={{ color: "var(--color-accent)" }}>
+              {reopenDate}
+            </span>
+            .
+          </p>
         )}
       </div>
     </section>

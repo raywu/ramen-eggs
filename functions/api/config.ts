@@ -17,6 +17,9 @@ const PUBLIC_KEYS = new Set([
   "pickup_window_end",
   "pickup_dow",
   "order_dow",
+  "store_status",
+  "store_reopen_date",
+  "store_closure_note",
 ]);
 
 const ALLOWED_ORIGINS = [
