@@ -35,6 +35,9 @@ const sheetData = {
     ["form_responses_sheet_url", "https://docs.google.com/secret"],
     ["whatsapp_beta_invite_link", "https://chat.whatsapp.com/secret"],
     ["order_deadline", "10:00 PM PT"],
+    ["store_status", "open"],
+    ["store_reopen_date", "March 20, 2026"],
+    ["store_closure_note", "We're on vacation!"],
   ],
 };
 
@@ -74,6 +77,9 @@ describe("GET /api/config", () => {
     expect(keys).toContain("order_dow");
     expect(keys).toContain("bundles");
     expect(keys).toContain("order_deadline");
+    expect(keys).toContain("store_status");
+    expect(keys).toContain("store_reopen_date");
+    expect(keys).toContain("store_closure_note");
     expect(keys).not.toContain("form_responses_sheet_url");
     expect(keys).not.toContain("whatsapp_beta_invite_link");
     expect(data.values[0]).toEqual(["key", "value"]);

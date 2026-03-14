@@ -23,6 +23,38 @@ const configValues = {
   ],
 };
 
+const storeClosedConfig = {
+  values: [
+    ["key", "value"],
+    ["store_status", "closed"],
+    ["store_closure_note", "Taking a break for the holidays"],
+    ["store_reopen_date", "January 5, 2027"],
+  ],
+};
+
+const storeClosedNoDateConfig = {
+  values: [
+    ["key", "value"],
+    ["store_status", "closed"],
+    ["store_closure_note", "We'll be back soon"],
+  ],
+};
+
+function mockFetchWithStoreConfig(configData: object) {
+  return vi.fn().mockImplementation((url: string) => {
+    if (url === "/api/config") {
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(configData),
+      });
+    }
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({}),
+    });
+  });
+}
+
 function mockFetch(ok: boolean, body: object = {}) {
   return vi.fn().mockImplementation((url: string) => {
     if (url === "/api/config") {
@@ -339,6 +371,111 @@ describe("OrderForm — submission", () => {
     expect(body.name).toBe("Test User");
     expect(body.phone).toBe("+14155551234");
     expect(body.quantity).toBe("10");
+  });
+});
+
+describe("OrderForm — store closure", () => {
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+  });
+
+  it("shows store closed message when store_status is closed", async () => {
+    mockIsOpen.mockReturnValue(true);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+    global.fetch = mockFetchWithStoreConfig(storeClosedConfig);
+
+    render(<OrderForm />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Taking a break for the holidays")).toBeInTheDocument();
+    });
+    expect(screen.getByText(/January 5, 2027/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Place Order" })).not.toBeInTheDocument();
+  });
+
+  it("shows store closed message without reopen date when not provided", async () => {
+    mockIsOpen.mockReturnValue(true);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+    global.fetch = mockFetchWithStoreConfig(storeClosedNoDateConfig);
+
+    render(<OrderForm />);
+
+    await waitFor(() => {
+      expect(screen.getByText("We'll be back soon")).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/We'll be back on/)).not.toBeInTheDocument();
+  });
+
+  it("shows fallback heading when store is closed with no closure note", async () => {
+    mockIsOpen.mockReturnValue(true);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+    global.fetch = mockFetchWithStoreConfig({
+      values: [
+        ["key", "value"],
+        ["store_status", "closed"],
+      ],
+    });
+
+    render(<OrderForm />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/temporarily closed/i)).toBeInTheDocument();
+    });
+  });
+
+  it("shows form when store_status is open and within time window", async () => {
+    mockIsOpen.mockReturnValue(true);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+    global.fetch = mockFetchWithStoreConfig({
+      values: [
+        ["key", "value"],
+        ["store_status", "open"],
+        ["unit_price", "$1.50"],
+      ],
+    });
+
+    render(<OrderForm />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("order-info")).toBeInTheDocument();
+    });
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
+  });
+
+  it("preview mode bypasses store closure", async () => {
+    mockIsOpen.mockReturnValue(false);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+    global.fetch = mockFetchWithStoreConfig(storeClosedConfig);
+
+    Object.defineProperty(window, "location", {
+      value: { search: "?preview=true", hostname: "localhost" },
+      writable: true,
+    });
+
+    render(<OrderForm />);
+
+    expect(screen.getByRole("button", { name: "Place Order" })).toBeInTheDocument();
+
+    Object.defineProperty(window, "location", {
+      value: { search: "", hostname: "localhost" },
+      writable: true,
+    });
+  });
+
+  it("shows regular closed message when store is open but outside time window", async () => {
+    mockIsOpen.mockReturnValue(false);
+    mockGetNext.mockReturnValue(new Date("2026-03-03T16:30:00Z"));
+    global.fetch = mockFetchWithStoreConfig({
+      values: [
+        ["key", "value"],
+        ["store_status", "open"],
+      ],
+    });
+
+    render(<OrderForm />);
+
+    expect(screen.getByText(/orders are currently closed/i)).toBeInTheDocument();
   });
 });
 
